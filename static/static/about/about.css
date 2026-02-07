@@ -1,0 +1,6 @@
+blockquote{
+  margin-left: 0;
+  padding-left: .9rem;
+  border-left: 2px solid currentColor;
+  opacity: .95;
+}

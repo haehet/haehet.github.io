@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>haehet</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on haehet</description>
+    <generator>Hugo -- 0.155.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 08 Feb 2026 00:00:00 +0900</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>My First Post</title>
+      <link>http://localhost:1313/blog/my-first-post/</link>
+      <pubDate>Sun, 08 Feb 2026 00:00:00 +0900</pubDate>
+      <guid>http://localhost:1313/blog/my-first-post/</guid>
+      <description>&lt;hr&gt;
+&lt;h1 id=&#34;test-for-uploading&#34;&gt;test for uploading&lt;/h1&gt;
+&lt;h2 id=&#34;introduction-to-the-armv8-architecture&#34;&gt;Introduction to the Armv8 Architecture&lt;/h2&gt;</description>
+    </item>
+    <item>
+      <title>About</title>
+      <link>http://localhost:1313/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/about/</guid>
+      <description>&lt;h2 id=&#34;haehet&#34;&gt;haehet&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m a high school student who interested in cyber security&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;Interested in: kernel / boot loader / binary exploit&lt;/li&gt;
+&lt;li&gt;Blog: notes + write-ups + projects&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;ctf--award&#34;&gt;CTF &amp;amp; Award&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;2nd, 2025 WaRP vs s0sCoD3 CTF&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;</description>
+    </item>
+  </channel>
+</rss>
