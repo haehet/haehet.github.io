@@ -2,6 +2,8 @@
 title: "About"
 url: "/about/"
 draft: false
+showToc: false
+hidemeta: true
 ---
 
 ## haehet
