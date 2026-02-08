@@ -21,6 +21,7 @@ enableRobotsTXT = true
   ShowReadingTime = true
   ShowToc = true
   ShowCodeCopyButtons = true
+  hideFooter =  true
 
   [params.profileMode]
     enabled = true
