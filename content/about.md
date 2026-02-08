@@ -10,7 +10,7 @@ hidemeta: true
 
 I'm a high school student who interested in cyber security
 
->- Interested in: kernel / boot loader / binary exploit
+>- Interested in: kernel / binary exploit / Computer Architecture
 >- Blog: notes + write-ups + projects
 ---
 
