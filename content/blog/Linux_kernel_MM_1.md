@@ -1,7 +1,7 @@
 +++
 date = '2026-02-09T17:43:26+09:00'
 draft = false
-title = '[Linux Kernel] 메모리 관리 1편: TLB와 Page Table Walk: Multi Level paging 동작 원리'
+title = '메모리 관리 1편: TLB와 Page Table Walk: Multi Level paging 동작 원리'
 categories = ['Linux kernel']
 tags = ['Memory Management']
 +++

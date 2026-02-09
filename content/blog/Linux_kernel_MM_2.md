@@ -1,7 +1,7 @@
 +++
 date = '2026-02-09T17:53:51+09:00'
 draft = false
-title = '[Linux Kernel] 메모리 관리 2편: Page Allocator (PCP & Buddy System)'
+title = '메모리 관리 2편: Page Allocator (PCP & Buddy System)'
 categories = ['Linux kernel']
 tags = ['Memory Management']
 +++
