@@ -4,6 +4,7 @@ draft = false
 title = '메모리 관리 2편: Page Allocator (PCP & Buddy System)'
 categories = ['Linux kernel']
 tags = ['Memory Management']
+hideSummary = true
 +++
 
 이번 글에서는 slub allocator에 대해 공부하기 전에 리눅스의 메모리 관리 시스템 중에서도 페이지 단위 물리 메모리 할당을 담당하는 Page Allocator를 먼저 정리해보겠다. (궁금한 내용을 인터넷에 돌아다니며 정리한 것이므로 틀린 내용이 있을 수도 있습니다.)

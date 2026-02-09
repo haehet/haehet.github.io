@@ -4,6 +4,7 @@ draft = false
 title = '메모리 관리 3편: Slab Allocator'
 categories = ['Linux kernel']
 tags = ['Memory Management']
+hideSummary = true
 +++
 이번 글에서는 kernel exploit에서 기본지식이 되는 Slub allocator에 대해서 정리해보겠다.(틀린 내용이 있을 수도 있으니 양해 부탁드립니다..)
 

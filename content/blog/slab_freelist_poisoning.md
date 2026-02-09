@@ -4,6 +4,7 @@ draft = false
 title = 'Slab free list poisoning'
 categories = ['Linux kernel']
 tags = ['kernel exploit']
+hideSummary = true
 +++
 
 
