@@ -1,6 +1,6 @@
 +++
 date = '2026-02-09T19:53:44+09:00'
-draft = true
+draft = false
 title = 'Dirty Pagetable'
 categories = ['Linux kernel']
 tags = ['kernel exploit']
