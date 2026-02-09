@@ -4,6 +4,10 @@ title = "haehet"
 theme = "PaperMod"
 enableRobotsTXT = true
 
+[services]
+  [services.googleAnalytics]
+  ID = "G-1MKP9F2B44"
+
 [outputs]
   home = ["HTML", "RSS", "JSON"]
 
