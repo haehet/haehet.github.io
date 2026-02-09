@@ -36,6 +36,15 @@ enableRobotsTXT = true
     name = "github"
     url = "https://github.com/haehet"
 
+[markup]
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = true
+    noClasses = true
+    style = "onedark"
+    lineNos = true
+    lineNumbersInTable = true
+
 [menu]
   [[menu.main]]
     name = "Home"
