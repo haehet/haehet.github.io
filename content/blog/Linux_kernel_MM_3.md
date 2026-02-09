@@ -297,7 +297,7 @@ static inline freeptr_t freelist_ptr_encode(const struct kmem_cache *s,
 
 또한 해당 config가 켜져있을 경우 연속한 DFB를 감지한다.
 
-```
+```c
 static inline void set_freepointer(struct kmem_cache *s, void *object, void *fp)
 {
 	unsigned long freeptr_addr = (unsigned long)object + s->offset;
