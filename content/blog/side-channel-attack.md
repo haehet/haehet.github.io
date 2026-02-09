@@ -15,7 +15,7 @@ tags = ['side-channel-attack', 'Assembly', 'Timing attack']
 
 *TSX 문법을 지원 안 할 수도 있으므로 cat /proc/cpuinfo를 이용해서 미리 확인 하도록 하자.
 
-```
+```asm
 .intel_syntax noprefix
 
 mov rsi, 0             /* Starting Address */
@@ -39,7 +39,7 @@ syscall
 
 prefetcht는 CPU 캐시에 미리 주소를 올려 놓아서 명령어의 효율성을 높이기 위해 만들어졌다. 여기에서 취약점이 발생한다. 캐시에 올리는 주소가 매핑이 안되있어도 예외(SIGSEGV)가 발생하지 않는다. 또한 prefetcht를 통해 접근 한 주소가 매핑이 안되있으면 명령어 실행이 오래 걸리는 것을 이용하여 시간을 측정한다. 그리고 측정한 시간을 비교하여 매핑이 되어있는 곳을 찾는다. 다음 공격은 커널에서 **EntryBleed**라는 기법으로도 알려져있다.
 
-```
+```asm
 prefetch_time:
     rdtsc
     mov edi, eax
@@ -61,7 +61,7 @@ rdtsc는 cpu 사이클을 측정 후 rax, rdi에 그 값을 저장한다. lfence
 
 현대 x86 64 프로세서는 성능 향상을 위해 Single Instruction Multiple Data (SIMD)을 지원한다. 하지만 이러한 명령어들은 보안 문제를 야기할 수 있다. Advanced Vector Extensions (AVX)가 그 예시이다. 아래 코드를 보고 이해해보자.
 
-```
+```asm
 avx_time:
     vpxor       ymm0, ymm0, ymm0
     mfence
