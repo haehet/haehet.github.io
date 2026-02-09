@@ -1,7 +1,9 @@
 +++
 date = '2026-02-09T17:43:26+09:00'
-draft = true
+draft = false
 title = '[Linux Kernel] 메모리 관리 1편: TLB와 Page Table Walk: Multi Level paging 동작 원리'
+categories = ['Linux kernel']
+tags = ['Memory Management']
 +++
 
 이번 글에서는 뒤에서 공부할  buddy system이나 slub allocator에 앞서 리눅스 메모리 관리 이론 및 기본적인 것들을 정리해보겠다.
