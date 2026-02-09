@@ -32,9 +32,9 @@ Cross-cache attack의 원리는 단순하다. 관리할 수 있는 free page가 
 
 >**objs_per_slab:** 한개의 슬렙 페이지안에 들어가는 object의 수를 말한다.
 >
-  **order:** 한개의 슬렙 페이지의 order(차수)를 말한다.
+> **order:** 한개의 슬렙 페이지의 order(차수)를 말한다.
 >
-  **cpu_partial:** percpu의 partial list에 들어갈 수 있는 slab 페이지의 최대 수를 말한다.
+> **cpu_partial:** percpu의 partial list에 들어갈 수 있는 slab 페이지의 최대 수를 말한다.
 
 ![](https://blog.kakaocdn.net/dna/bJj9VZ/dJMcahiUNpF/AAAAAAAAAAAAAAAAAAAAAJdjSF2YrTKpR88WdHnoPpqfE643J591alC3GVmPj73z/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Cya5tvErcK7PNt%2FGSZxkQYWphuM%3D)
 
