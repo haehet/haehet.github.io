@@ -1,10 +1,10 @@
-+++
+---
 date = '2026-02-09T17:10:41+09:00'
 draft = true
 title = 'Side Channel Attack(with assembly)'
 categories = ['Pwnable']
 tags = ['side-channel-attack', 'Assembly', 'Timing attack']
-+++
+---
 
 
 이번 글에서는 Assembly를 활용한 Side-channel attack에 대해서 알아보겠다.
