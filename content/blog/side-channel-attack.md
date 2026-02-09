@@ -1,9 +1,9 @@
 ---
-date = '2026-02-09T17:10:41+09:00'
-draft = true
-title = 'Side Channel Attack(with assembly)'
-categories = ['Pwnable']
-tags = ['side-channel-attack', 'Assembly', 'Timing attack']
+date : '2026-02-09T17:10:41+09:00'
+draft : true
+title : 'Side Channel Attack(with assembly)'
+categories : ['Pwnable']
+tags : ['side-channel-attack', 'Assembly', 'Timing attack']
 ---
 
 
