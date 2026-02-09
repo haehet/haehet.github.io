@@ -42,7 +42,7 @@ Cross-cache attack의 원리는 단순하다. 관리할 수 있는 free page가 
 
 슬랩 객체의 할당을 예측하기 쉽게 우리의 CPU를 고정해둔다. 다음과 같은 함수를 통해 할 수 있다.
 
-```
+```c
 void pin_cpu(int core_id) {
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
