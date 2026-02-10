@@ -61,7 +61,6 @@ __libc_malloc (size_t bytes)
     }
 
   arena_get (ar_ptr, bytes);
-
   victim = _int_malloc (ar_ptr, bytes);
 
   /* Retry with another arena only if we were able to find a usable arena
@@ -84,8 +83,9 @@ __libc_malloc (size_t bytes)
   return victim;
 }
 ```
-`line 11`에서 볼 수 있듯이 만약 `ptmmalloc`가 초기화가 안되어있다면  `ptmalloc_init()` 함수를 호출하여 초기화 시킨다.<br>
+> `line 11:` 만약 `ptmmalloc`가 초기화가 안되어있다면  `ptmalloc_init()` 함수를 호출하여 초기화 시킨다.
 
+> `line 13~43:` 만약 `tcache`를 사용한다면 `MAYBE_INIT_TCACHE ()`를 통해 tcache를 초기화 하고 해당 `tcache idx`에 해당하는 tcache bin의 수를 확인 후 해당 bin에서 가져온다.
 
 
 ![heap 초기화가 안된 모습](heap_init.png)

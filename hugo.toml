@@ -15,6 +15,7 @@ enableRobotsTXT = true
   pagerSize = 10
 
 [params]
+  customCSS = ["css/custom.css"]
   defaultTheme = "dark"
   disableThemeToggle = false
   ShowShareButtons = false

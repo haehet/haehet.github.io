@@ -1,0 +1,10 @@
+/* inline code: subtle */
+:where(.post-content, .entry-content, .content, main) :not(pre) > code {
+  background: rgba(127,127,127,.14) !important;
+  border: 1px solid rgba(127,127,127,.25) !important;
+  padding: 0.12em 0.38em !important;
+  border-radius: 6px !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
+  font-size: 0.95em !important;
+  box-shadow: none !important;
+}
