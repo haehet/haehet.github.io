@@ -8,7 +8,7 @@ hideSummary = true
 +++
 이번 글에서는 kernel exploit을 할 때 강력한 primitive를 얻을 수 있는 Dirty Pagetable에 대해서 정리해보겠다.
 
-### 1. page table이란? 
+## 1. page table이란? 
 
  멀티레벨페이징을 공부했다면 알겠지만 page table은 CPU가 가상주소(VA)를 물리주소(PA)로 변환할 때 쓰는 테이블이다. CR3레지스터를 통해 확인 가능하다. (여기서는 따로 이론적인 내용을 길게 설명 안하겠다.)
 
@@ -17,7 +17,7 @@ hideSummary = true
 
 page table은 항상 미리 다 만들어져 있는 게 아니라 Linux는 대부분의 매핑을 **지연(lazy) 생성**한다. 즉 실제 페이지테이블 엔트리는 첫 접근(page fault)가 발생하면서 할당되는 경우가 많다. Dirty Pagetable 기법은 이를 이용한다.
 
-### 2. Dirty pagetable
+## 2. Dirty pagetable
 
 Dirty pagetable이란 위에서 설명한 **Page table을 조작하는 기법**이다. Page table을 우리가 원하는 **물리 주소**로 조작가능하면 단순히 우리의 프로세스에서 특정 영역에 메모리 접근을 하는 것만으로도 kernel 영역의 메모리를 조작 가능하다. 또한 이 기법은 페이지의 권한까지 수정 가능하여 커널에 있는 **특정 함수를 우리가 원하는 셸코드**로 바꾸는 것도 가능하다. 
 
@@ -61,7 +61,7 @@ void flush_tlb_and_print(void *ptr, size_t count) {
 }
 ```
 
-### 3. kernel base leak via phys
+## 3. kernel base leak via phys
 
 Diry pagetable 공격이 성공을 했어도 우리가 원하는 주소의 물리주소를 알지 못하면 의미가 없다. 먼저 physmap의 물리주소는 그냥 phsymap의 가상 주소의 **하위 3바이트**랑 동일하다.  하지만 kernel base의 물리주소는 커널이 부팅될 때마다 바뀐다. 우리는 이 물리 주소를 얻기 위해서 커널의 특정 고정된 물리주소를 이용한다. 다음과 같이 물리 주소 **0x9c000**에 접근 시 놀라운 점을 볼 수 있다.
 

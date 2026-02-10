@@ -8,7 +8,7 @@ hideSummary = true
 +++
 이번 글에서는 kernel exploit에서 기본지식이 되는 Slub allocator에 대해서 정리해보겠다.(틀린 내용이 있을 수도 있으니 양해 부탁드립니다..)
 
-### 1. Slab allocator란?
+## 1. Slab allocator란?
 
  **Slab allocator**는 커널 영역의 메모리를 효율적으로 관리하기 메모리 할당기이다. 기존의 buddy system을 통한 메모리 관리는 2^n 단위로만 메모리를 할당 해 주기 때문에 **내부 단편화**가 생길 수 있다는 단점이 있었다. 이를 해결하기 위해 **Slab allocator**가 등장하였다. 
 
@@ -23,7 +23,7 @@ hideSummary = true
 
  **SLOB allocator:** Solaris OS에서 구현된 슬랩 할당기이다. 현재는 메모리가 부족한 임베디드 시스템에서 사용되며 매우 작은 메모리 청크를 할당할 때 성능이 좋다. first-fit(최초 적합) 할당 알고리즘을 기반으로 한다.
 
-### 2. Slab allocator의 구조 및 용어
+## 2. Slab allocator의 구조 및 용어
 
 Slab allocator는 커널이 자주 할당·해제하는 **동일 크기/동일 타입의 객체**에 대해 그 객체 전용 캐시(kmem_cache)를 만들고 페이지 단위로 확보한 메모리(slabs)를 객체 크기로 잘라 미리 준비해 둔 뒤 할당 시에는 일반적인 페이지 할당 대신 **캐시에서 객체를 재사용**하게 함으로써 **할당/해제 오버헤드와 단편화를 줄인다.**
 
@@ -82,7 +82,7 @@ kmalloc-16          1792   1792     16  256    1 : tunables    0    0    0 : sla
 kmalloc-8           2048   2048      8  512    1 : tunables    0    0    0 : slabdata      4      4      0
 ```
 
-### 3. Slab cache의 구조
+## 3. Slab cache의 구조
 
 위에서 설명한 slab cache는 **kmem_cache** 구조체를 통해 표현된다.
 
@@ -140,7 +140,7 @@ struct kmem_cache_cpu {
 };
 ```
 
-### 4. Slab object allocation
+## 4. Slab object allocation
 
 slab object는 5개의 방식(Fast path, Slowpath-1, Slowpath-2, Slowpath-3, Slowpath-4)중 한개로 할당된다.
 
@@ -178,7 +178,7 @@ Fastpath는 가장 빠른 할당방식으로 **현재 percpu→freelist**에 �
 
 ![](https://blog.kakaocdn.net/dna/cByxj5/dJMcaajI0Dw/AAAAAAAAAAAAAAAAAAAAANtHiG1-5TiCPBNz5umy8AuzCY5PgS44EjLfcqLzmynu/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=hooJcXs2rpUWVjY%2FCCoTcrCb78g%3D)
 
-### 5. Slab object free
+## 5. Slab object free
 
 해제 과정은 할당과정과 매우 유사하게 이루어진다.
 

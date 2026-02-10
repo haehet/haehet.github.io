@@ -9,7 +9,7 @@ hideSummary = true
 
 이번 글에서는 slub allocator에 대해 공부하기 전에 리눅스의 메모리 관리 시스템 중에서도 페이지 단위 물리 메모리 할당을 담당하는 Page Allocator를 먼저 정리해보겠다. (궁금한 내용을 인터넷에 돌아다니며 정리한 것이므로 틀린 내용이 있을 수도 있습니다.)
 
-### 1. NUMA(Non-Uniform Memory Access)와 Zones, Free Lists
+## 1. NUMA(Non-Uniform Memory Access)와 Zones, Free Lists
 
   NUMA란 **멀티 프로세서 환경에서 적용되는 메모리 접근 방식**이다. 멀티 프로세서 환경에서는 단일 버스를 공유하기 때문에 여러개의 CPU가 하나의 메모리에 접근 하게 되면 한개의 cpu를 제외하고 전부 block상태가 되어서 메모리 처리가 늦어지는 **병목현상**이 발생한다. NUMA는 이런 단점을 해결하였다. NUMA 시스템에서는 CPU를 몇개의 그룹으로 나누고 각 그룹에게 별도의 지역 메모리를 할당해준다. NUMA 환경에서 각각의 **NUMA node**의 메모리 설계는 다음과 같이 **pglist_data**구조체로 표현된다.
 
@@ -89,7 +89,7 @@ free_area 구조체는 **migrration type**으로 인덱싱된 free lists array�
 
 free area의 구조
 
-### 2. Buddy system의 동작
+## 2. Buddy system의 동작
 
 리눅스의 page allocator는 내부적으로 Buddy 메모리 할당 기법을 사용한다. 메모리는 **4KB**를  기본 단위로 하며 그보다 큰 블록은 이 단위를 2의 거듭제곱 단위(2ⁿ)로 묶어서 관리한다. 이때 지수 n을 **order**라고 부른다. 각 블록의 첫 페이지 구조체(struct page)의 page->private 필드에 order 값이 저장된다.
 
@@ -98,7 +98,7 @@ free area의 구조
 **해제 과정:** 반대로 페이지를 해제할 때, **짝(buddy) 블록이 비어 있다면 둘을 합쳐(coalesce)** 더 큰 order 블록으로 만든다.  
 이 과정 **더 이상 합칠 수 없거나 MAX_ORDER(10)** 에 도달할 때까지 반복된다.
 
-### 3. __alloc_pages  분석 & fastpath와 slowpath
+## 3. __alloc_pages  분석 & fastpath와 slowpath
 
  먼저 분석을 시작하기에 앞서 kmalloc-cg-192 slab(CPU-partial slabs 포함)이 가득차서 커널이 새 슬랩을 만들기 위해 **__alloc_pages**를 호출하는 상황을 가정해보자. 이때 함수 호출은 다음과 같은 순서로 일어난다.
 
@@ -281,7 +281,7 @@ struct page *__rmqueue_smallest(struct zone *zone, unsigned int order,
 
  **kswapd:** 백그라운드에서 페이지 회수(reclaim) 매커니즘을 동작시켜 Dirty 된 파일 캐시들을 기록하고, Clean된 파일 캐시를 비우고, swap 시스템에 페이지들을 옮기는 등으로 free 페이지들을 확보한다.
 
-### **4. 구조 요약**
+## 4. 구조 요약
 
 지금까지의 구조를 그림으로 요약하면 다음과 같다. 
 
