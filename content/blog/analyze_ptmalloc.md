@@ -143,6 +143,8 @@ malloc_init_state (mstate av)
 }
 ```
 
+
+`arena`란 멀티스레드 환경에서 메모리 할당(malloc) 시 발생하는 잠금 경쟁(Lock Contention)과 성능 저하를 방지하기 위해 스레드별로 독립적인 힙 메모리 영역을 관리하는 구조체이다.
 `arena`를 정의하는 `malloc_state`구조체는 다음과 같다.
 
 ```c
@@ -190,4 +192,76 @@ struct malloc_state
   INTERNAL_SIZE_T max_system_mem;
 };
 ```
-{{< figure src="main_Arena.png" caption="malloc_init_state() 호출 전 main_arena" >}}
+`arena`의 구조를 시각화 해보면 다음과 같다.
+
+![](/blog/analyze_ptmalloc/2026-02-10-13-32-39.png)
+
+&nbsp;
+### 1.2 tcache_init()
+
+tcache는 스레드 별로 빠르게 할당을 해주기 위해 만들어진 목적에 맞게 malloc_state가 아닌 다른 구조체에서 관리된다. 그 구조체는 `tcache_perthread_struct`이다. 
+```c
+static __thread tcache_perthread_struct *tcache = NULL;
+typedef struct tcache_perthread_struct
+{
+  uint16_t counts[TCACHE_MAX_BINS];
+  tcache_entry *entries[TCACHE_MAX_BINS];
+} tcache_perthread_struct;
+```
+
+다음과 같이 간단하게 tcache 별로 counts, entries pointer를 가지고 있다. 또한 이 구조체를 가리키는 `tcache` 변수는 fsbase(TLS) 근처에 저장되어 있다.
+![](/blog/analyze_ptmalloc/2026-02-10-13-42-51.png)
+
+위에서 설명한 `MAYBE_INIT_TCACHE()`은 `tcache` 변수가 초기화 되어있지 안하면 `tcache_init()`을 호출한다.
+
+```c
+#define MAYBE_INIT_TCACHE() \
+  if (__glibc_unlikely (tcache == NULL)) \
+    tcache_init();
+```
+
+`tcache_init()` 함수는 `tcache_perthread_struct` 구조체를 `_int_malloc()` 함수를 통해 할당한다. 보통 우리가 heap을 보았을 때 제일 위에 있는 `0x290`짜리 chunk가 `tcache_perthread_struct`이다.
+
+
+```c
+static void
+tcache_init(void)
+{
+  mstate ar_ptr;
+  void *victim = 0;
+  const size_t bytes = sizeof (tcache_perthread_struct);
+
+  if (tcache_shutting_down)
+    return;
+
+  arena_get (ar_ptr, bytes);
+  victim = _int_malloc (ar_ptr, bytes);
+  if (!victim && ar_ptr != NULL)
+    {
+      ar_ptr = arena_get_retry (ar_ptr, bytes);
+      victim = _int_malloc (ar_ptr, bytes);
+    }
+
+
+  if (ar_ptr != NULL)
+    __libc_lock_unlock (ar_ptr->mutex);
+
+  /* In a low memory situation, we may not be able to allocate memory
+     - in which case, we just keep trying later.  However, we
+     typically do this very early, so either there is sufficient
+     memory, or there isn't enough memory to do non-trivial
+     allocations anyway.  */
+  if (victim)
+    {
+      tcache = (tcache_perthread_struct *) victim;
+      memset (tcache, 0, sizeof (tcache_perthread_struct));
+    }
+
+}
+```
+다음과 같이 `heap chunks`를 통해 tcache_perthread_struct의 모습을 볼 수 있다.
+
+![](/blog/analyze_ptmalloc/2026-02-10-13-43-56.png)
+
+
+

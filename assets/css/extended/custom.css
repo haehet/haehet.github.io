@@ -1,4 +1,5 @@
 /* inline code: subtle */
+/* Markdown 백틱 표현 조정하기*/
 :where(.post-content, .entry-content, .content, main) :not(pre) > code {
   background: rgba(127,127,127,.14) !important;
   border: 1px solid rgba(127,127,127,.25) !important;
