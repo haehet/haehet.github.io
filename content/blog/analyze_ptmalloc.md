@@ -1,6 +1,6 @@
 +++
 date = '2026-02-10T11:17:36+09:00'
-draft = true
+draft = false
 title = 'ptmalloc2 분석'
 categories = ['Pwnable']
 tags = ['Memory Management', 'Open source analyze']
