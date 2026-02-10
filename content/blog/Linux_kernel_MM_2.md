@@ -88,7 +88,7 @@ free_area 구조체는 **migrration type**으로 인덱싱된 free lists array�
 ![](https://blog.kakaocdn.net/dna/KWD2M/dJMcagYuTwu/AAAAAAAAAAAAAAAAAAAAAEyzZpet8zOd1GT1F-h-_J9Mevdl4QySpe2KGuX6sVmI/img.webp?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=xu6Q5vgogUh%2BYBpqyxZaf2GISHE%3D)
 
 free area의 구조
-
+&nbsp;
 ## 2. Buddy system의 동작
 
 리눅스의 page allocator는 내부적으로 Buddy 메모리 할당 기법을 사용한다. 메모리는 **4KB**를  기본 단위로 하며 그보다 큰 블록은 이 단위를 2의 거듭제곱 단위(2ⁿ)로 묶어서 관리한다. 이때 지수 n을 **order**라고 부른다. 각 블록의 첫 페이지 구조체(struct page)의 page->private 필드에 order 값이 저장된다.
@@ -97,7 +97,7 @@ free area의 구조
 
 **해제 과정:** 반대로 페이지를 해제할 때, **짝(buddy) 블록이 비어 있다면 둘을 합쳐(coalesce)** 더 큰 order 블록으로 만든다.  
 이 과정 **더 이상 합칠 수 없거나 MAX_ORDER(10)** 에 도달할 때까지 반복된다.
-
+&nbsp;
 ## 3. __alloc_pages  분석 & fastpath와 slowpath
 
  먼저 분석을 시작하기에 앞서 kmalloc-cg-192 slab(CPU-partial slabs 포함)이 가득차서 커널이 새 슬랩을 만들기 위해 **__alloc_pages**를 호출하는 상황을 가정해보자. 이때 함수 호출은 다음과 같은 순서로 일어난다.
@@ -280,7 +280,7 @@ struct page *__rmqueue_smallest(struct zone *zone, unsigned int order,
  **OOM killing:** 페이지 할당 시 요청한 order의 페이지가 부족하여 최종적으로 OOM killing을 통해 특정 태스크를 종료시키므로 확보한 페이지들로 할당한다.
 
  **kswapd:** 백그라운드에서 페이지 회수(reclaim) 매커니즘을 동작시켜 Dirty 된 파일 캐시들을 기록하고, Clean된 파일 캐시를 비우고, swap 시스템에 페이지들을 옮기는 등으로 free 페이지들을 확보한다.
-
+&nbsp;
 ## 4. 구조 요약
 
 지금까지의 구조를 그림으로 요약하면 다음과 같다. 

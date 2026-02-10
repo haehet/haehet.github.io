@@ -62,7 +62,7 @@ static inline void *get_freepointer(struct kmem_cache *s, void *object)
 ```
 
 공격자는 간단히 해당 next pointer를 조작함으로써 원하는 곳에 할당을 받을 수 있다. 물론 커널에도 해당 기법을 막기 위한 보안 설정이 있다. 예전 글에서 설명한 적 있지만 더 자세히 설명 해보겠다.
-
+&nbsp;
 ## 2.  Freelist randomization
 
 config_slab_freelist_random으로 활성화 하는 보안 기법이다. 다음과 같은 호출 흐름을 따른다.
@@ -102,7 +102,7 @@ static int init_cache_random_seq(struct kmem_cache *s)
 ```
 
 다음과 같이 각 kmem_cache가 가지는 s->random_seq 값에 따라 freelist를 랜덤화 한다. 공격자가 힙의 할당을 예상하기 어렵게 만들긴 하지만, 많은 heap spraying을 통해 bypass할 수 있다.
-
+&nbsp;
 ## 3. Slab freelist hardened
 
 직접적으로  free list poisoning을 막는 보안기법이다.

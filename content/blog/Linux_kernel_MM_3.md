@@ -22,7 +22,7 @@ hideSummary = true
  **SLUB allocator:** 대부분의 kernel 배포 버전에서 쓰이는 allocator이다. slab에 비해 메모리 지역성이 향상되었으며 slab에 비해 관리가 단순하다.
 
  **SLOB allocator:** Solaris OS에서 구현된 슬랩 할당기이다. 현재는 메모리가 부족한 임베디드 시스템에서 사용되며 매우 작은 메모리 청크를 할당할 때 성능이 좋다. first-fit(최초 적합) 할당 알고리즘을 기반으로 한다.
-
+&nbsp;
 ## 2. Slab allocator의 구조 및 용어
 
 Slab allocator는 커널이 자주 할당·해제하는 **동일 크기/동일 타입의 객체**에 대해 그 객체 전용 캐시(kmem_cache)를 만들고 페이지 단위로 확보한 메모리(slabs)를 객체 크기로 잘라 미리 준비해 둔 뒤 할당 시에는 일반적인 페이지 할당 대신 **캐시에서 객체를 재사용**하게 함으로써 **할당/해제 오버헤드와 단편화를 줄인다.**
@@ -81,7 +81,7 @@ kmalloc-32          3200   3200     32  128    1 : tunables    0    0    0 : sla
 kmalloc-16          1792   1792     16  256    1 : tunables    0    0    0 : slabdata      7      7      0
 kmalloc-8           2048   2048      8  512    1 : tunables    0    0    0 : slabdata      4      4      0
 ```
-
+&nbsp;
 ## 3. Slab cache의 구조
 
 위에서 설명한 slab cache는 **kmem_cache** 구조체를 통해 표현된다.
@@ -139,7 +139,7 @@ struct kmem_cache_cpu {
 #endif
 };
 ```
-
+&nbsp;
 ## 4. Slab object allocation
 
 slab object는 5개의 방식(Fast path, Slowpath-1, Slowpath-2, Slowpath-3, Slowpath-4)중 한개로 할당된다.
@@ -177,7 +177,7 @@ Fastpath는 가장 빠른 할당방식으로 **현재 percpu→freelist**에 �
 전체 과정을 보면 다음과 같다.
 
 ![](https://blog.kakaocdn.net/dna/cByxj5/dJMcaajI0Dw/AAAAAAAAAAAAAAAAAAAAANtHiG1-5TiCPBNz5umy8AuzCY5PgS44EjLfcqLzmynu/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=hooJcXs2rpUWVjY%2FCCoTcrCb78g%3D)
-
+&nbsp;
 ## 5. Slab object free
 
 해제 과정은 할당과정과 매우 유사하게 이루어진다.
@@ -215,7 +215,7 @@ Fastpath는 가장 빠른 할당방식으로 **현재 percpu→freelist**에 �
 **percpu→partial**에서 관리할 수 있는 slab page가 꽉찬 경우 모든 slab object가 free 상태인 경우 buddy system을 통해 slab page를 반환 시킨다. 이 과정을 이용하면 **UAF**등의 primitive를 다른 slab cache로 옮길 수 있는 **cross cache attack**이 가능해진다.
 
 ![](https://blog.kakaocdn.net/dna/bezhWw/dJMcabCVEIM/AAAAAAAAAAAAAAAAAAAAALWFWrjRuNmQoHc6SQuFbfkaOwP_EixSsP82h_xDnFuz/img.webp?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=nckgna1AdwK6nDGEQdlugYqcsXs%3D)
-
+&nbsp;
 ### 6. Slab mitigations
 
 kernel은 다음과 같은 보안 기법을 통해 slab 내부에서 kernel exploit을 어렵게 만든다.
