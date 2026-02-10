@@ -85,9 +85,36 @@ __libc_malloc (size_t bytes)
 ```
 > `line 11:` 만약 `ptmmalloc`가 초기화가 안되어있다면  `ptmalloc_init()` 함수를 호출하여 초기화 시킨다.
 
-> `line 13~43:` 만약 `tcache`를 사용한다면 `MAYBE_INIT_TCACHE ()`를 통해 tcache를 초기화 하고 해당 `tcache idx`에 해당하는 tcache bin의 수를 확인 후 해당 bin에서 가져온다.
+
+> `line 13~43:` 만약 `tcache`를 사용한다면 `MAYBE_INIT_TCACHE()`를 통해 tcache를 초기화 하고 해당 `tcache idx`에 해당하는 tcache bin의 수를 확인 후 해당 bin에서 가져온다.
 
 
-![heap 초기화가 안된 모습](heap_init.png)
+> `line 45~46:` tcache에 청크를 가져오지 못했다면 **_int_malloc** 함수를 호출하여 청크를 할당 받는다.
+
+> `line 47~60:` 위에서도 할당을 받는데 실패했더면 다른 `arena`에서 한번 더 할당을 시도한다.  
+
+&nbsp;
 
 ### 1.1 ptmalloc_init()
+`ptmalloc_init`에서는 `tcache key`등을 초기화 한다.  
+그리고 `malloc_init_state (&main_arena)`를 호출하여 main arena를 초기화 한다.
+
+```c
+static void
+ptmalloc_init (void)
+{
+  if (__malloc_initialized)
+    return;
+
+  __malloc_initialized = true;
+
+#if USE_TCACHE
+  tcache_key_initialize ();
+#endif
+...
+
+  thread_arena = &main_arena;
+  malloc_init_state (&main_arena);
+
+
+```
