@@ -8,12 +8,12 @@ hideSummary = true
 +++
 
 
-이번 글에서는 glibc 2.39의 `ptmalloc2`에 대해서 분석해보겠다. 이미 ptmalloc를 분석하는 글들이 많이 있지만 이 추상화 없이 코드 자체를 분석해보겠다.
+이번 글에서는 glibc 2.39의 `ptmalloc2`에 대해서 분석해보겠다. 이미 ptmalloc를 분석하는 글들이 많이 있지만 이 추상화 없이 코드 자체를 분석해보겠다. (다음 글은 ptmalloc에 대한 기본적인 지식이 없다면 조금 어려울 수도 있따.)
 
 
 ## 1. malloc 
 
-우리가 코드에서 `malloc(..)`을 호출하면 내부에서 `__libc_malloc(...)` 함수가 호출된다. 
+우리가 코드에서 `malloc(..)`을 호출하면 내부에서 `__libc_malloc(...)` 함수가 호출된다. `__libc_malloc()` 함수의 호출 흐름을 따라가면서 분석을 해보자
 
 ```c
 void *
@@ -83,7 +83,7 @@ __libc_malloc (size_t bytes)
   return victim;
 }
 ```
-> `line 11:` 만약 `ptmmalloc`가 초기화가 안되어있다면  `ptmalloc_init()` 함수를 호출하여 초기화 시킨다.
+> `line 11:` 만약 `ptmalloc`가 초기화가 안되어있다면  `ptmalloc_init()` 함수를 호출하여 초기화 시킨다.
 
 
 > `line 13~43:` 만약 `tcache`를 사용한다면 `MAYBE_INIT_TCACHE()`를 통해 tcache를 초기화 하고 해당 `tcache idx`에 해당하는 tcache bin의 수를 확인 후 해당 bin에서 가져온다.
@@ -91,7 +91,7 @@ __libc_malloc (size_t bytes)
 
 > `line 45~46:` tcache에 청크를 가져오지 못했다면 **_int_malloc** 함수를 호출하여 청크를 할당 받는다.
 
-> `line 47~60:` 위에서도 할당을 받는데 실패했더면 다른 `arena`에서 한번 더 할당을 시도한다.  
+> `line 47~60:` 위에서도 할당에 실패했다면 다른 `arena`에서 한번 더 할당을 시도한다.  
 
 &nbsp;
 
@@ -212,7 +212,7 @@ typedef struct tcache_perthread_struct
 다음과 같이 간단하게 tcache 별로 counts, entries pointer를 가지고 있다. 또한 이 구조체를 가리키는 `tcache` 변수는 fsbase(TLS) 근처에 저장되어 있다.
 ![](/blog/analyze_ptmalloc/2026-02-10-13-42-51.png)
 
-위에서 설명한 `MAYBE_INIT_TCACHE()`은 `tcache` 변수가 초기화 되어있지 안하면 `tcache_init()`을 호출한다.
+위에서 설명한 `MAYBE_INIT_TCACHE()`은 `tcache` 변수가 초기화 되어있지 않으면 `tcache_init()`을 호출한다.
 
 ```c
 #define MAYBE_INIT_TCACHE() \
@@ -260,8 +260,60 @@ tcache_init(void)
 }
 ```
 다음과 같이 `heap chunks`를 통해 tcache_perthread_struct의 모습을 볼 수 있다.
-
 ![](/blog/analyze_ptmalloc/2026-02-10-13-43-56.png)
 
+이를 바탕으로 `tcache`의 구조를 정리하면, 각 `tc_idx`(tcache bin index)마다
+- 해당 bin에 들어있는 청크 개수(`counts[tc_idx]`)
+- 단일 연결 리스트의 head 포인터(`entries[tc_idx]`)
+를 가지는 형태임을 알 수 있다.
+
+![](/blog/analyze_ptmalloc/2026-02-10-13-50-08.png)
+
+
+&nbsp;
+### 1.3 tcache_get()
+`tcache_get()` 함수는 tcache에서 bin을 가져온다. 내부에서는 `tcache_get_n()` 함수를 호출한다.
+```c
+/* Like the above, but removes from the head of the list.  */
+static __always_inline void *
+tcache_get (size_t tc_idx)
+{
+  return tcache_get_n (tc_idx, & tcache->entries[tc_idx]);
+}
+```
+
+`tcache_get_n()`은 다음과 같이 `tcache entry`에서 청크를 가져온다.
+
+```c
+static __always_inline void *
+tcache_get_n (size_t tc_idx, tcache_entry **ep)
+{
+  tcache_entry *e;
+  if (ep == &(tcache->entries[tc_idx]))
+    e = *ep;
+  else
+    e = REVEAL_PTR (*ep);
+
+  if (__glibc_unlikely (!aligned_OK (e)))
+    malloc_printerr ("malloc(): unaligned tcache chunk detected");
+
+  if (ep == &(tcache->entries[tc_idx]))
+      *ep = REVEAL_PTR (e->next);
+  else
+    *ep = PROTECT_PTR (ep, REVEAL_PTR (e->next));
+
+  --(tcache->counts[tc_idx]);
+  e->key = 0;
+  return (void *) e;
+}
+```
+&nbsp;
+
+> tcache의 free된 chunk들은 `safe linking`이라는 보안기법이 걸려있다. 다음과 같이 `자기 자신의 주소 >> 12` ^ `다음 chunk`를 저장한다.
+```c
+#define PROTECT_PTR(pos, ptr) \
+  ((__typeof (ptr)) ((((size_t) pos) >> 12) ^ ((size_t) ptr)))
+#define REVEAL_PTR(ptr)  PROTECT_PTR (&ptr, ptr)
+```
 
 
