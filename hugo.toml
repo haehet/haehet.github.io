@@ -3,7 +3,6 @@ languageCode = "en-us"
 title = "haehet"
 theme = "PaperMod"
 enableRobotsTXT = true
-name = "haehet"
 
 [outputs]
   home = ["HTML", "RSS", "JSON"]
@@ -72,3 +71,6 @@ name = "haehet"
     name = "Tags"
     url = "/tags/"
     weight = 6
+
+[author]
+  name = "haehet"
