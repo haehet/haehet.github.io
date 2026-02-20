@@ -1,7 +1,7 @@
 +++
 date = '2026-02-09T17:43:26+09:00'
 draft = false
-title = '메모리 관리 1편: TLB와 Page Table Walk: Multi Level paging 동작 원리'
+title = '메모리 관리 1: TLB와 Page Table Walk: Multi Level paging 동작 원리'
 categories = ['Linux kernel']
 tags = ['Memory Management']
 hideSummary = true
@@ -24,7 +24,7 @@ hideSummary = true
 &nbsp;
 ## 2. TLB(Translation Lookaside Buffer)와 Page Table Walk
 
- 멀티레벨 페이징은 페이지 테이블의 **메모리 낭비를 줄이는 대신** 주소 변환 과정이 길어질 수 있다. 만약 매 메모리 접근마다 PML4 → PDPT → PD → PT를 타고 내려가며 엔트리를 읽어야 한다면 주소 변환만으로도 메모리 접근이 여러 번 추가되어 성능이 크게 떨어진다. 이를 해결하기 위해 CPU는 **TLB(Translation Lookaside Buffer)**라는 캐시를 둔다. TLB에는 최근에 사용한 **가상주소 → 물리주소 변환 결과**가 저장된다. 따라서 대부분의 메모리 접근은 **TLB hit**로 처리되어 페이지 테이블을 실제로 탐색하지 않고도 빠르게 물리주소를 얻는다. **TLB miss**가 발생하면 MMU가 CR3에 저장된 최상위 테이블부터 시작해 자동으로 page table walk를 수행한다. 만약 유효한 매핑이 없으면 page fault가 발생하고 커널이 이를 처리한다.  
+ 멀티레벨 페이징은 페이지 테이블의 **메모리 낭비를 줄이는 대신** 주소 변환 과정이 길어질 수 있다. 만약 매 메모리 접근마다 PML4 → PDPT → PD → PT를 타고 내려가며 엔트리를 읽어야 한다면 주소 변환만으로도 메모리 접근이 여러 번 추가되어 성능이 크게 떨어진다. 이를 해결하기 위해 CPU는 TLB(Translation Lookaside Buffer)라는 캐시를 둔다. TLB에는 최근에 사용한 **가상주소 → 물리주소 변환 결과**가 저장된다. 따라서 대부분의 메모리 접근은 **TLB hit**로 처리되어 페이지 테이블을 실제로 탐색하지 않고도 빠르게 물리주소를 얻는다. **TLB miss**가 발생하면 MMU가 CR3에 저장된 최상위 테이블부터 시작해 자동으로 page table walk를 수행한다. 만약 유효한 매핑이 없으면 page fault가 발생하고 커널이 이를 처리한다.  
 리눅스는 이러한 구조를 기반으로 프로세스별 주소 공간을 mm_struct로 관리하며, 문맥 전환 시 CR3를 새로 갱신해 독립된 가상 메모리 공간을 유지한다.
 
 ![](https://blog.kakaocdn.net/dna/bV1suH/dJMcadUXQyX/AAAAAAAAAAAAAAAAAAAAAPqka9JzmUpcoyRMPrBGwMiZ8lh5E1nfW-NsqpeUo_kS/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=rScGos5NQt%2BUoUf1vjWA4c3eVfQ%3D)

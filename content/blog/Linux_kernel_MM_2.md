@@ -1,7 +1,7 @@
 +++
 date = '2026-02-09T17:53:51+09:00'
 draft = false
-title = '메모리 관리 2편: Page Allocator (PCP & Buddy System)'
+title = '메모리 관리 2: Page Allocator (PCP & Buddy System)'
 categories = ['Linux kernel']
 tags = ['Memory Management']
 hideSummary = true
@@ -43,7 +43,7 @@ typedef struct pglist_data {
 
 각각의 **memory zone**은 다음과 같이 **zone 구조체**로 묘사된다.
 
-```
+```c
 struct zone {
 	// ...
 	struct per_cpu_pages	__percpu *per_cpu_pageset;
@@ -61,7 +61,7 @@ struct zone {
 
   PAGE_ALLOC_COSTLR_ORDER보다 크다면 이 영역에 있는 페이지들이 사용된다.
 
-```
+```c
 struct per_cpu_pages {
 	spinlock_t lock;	    /* Protects lists field */
 	int count;		    /* number of pages in the list */
@@ -74,7 +74,7 @@ struct per_cpu_pages {
 
 per_cpu_pages 구조체에서 page들은 list[] array에 있는 여러개의 lists들로 조직된다.
 
-```
+```c
 struct free_area {
 	struct list_head	free_list[MIGRATE_TYPES];
 	unsigned long		nr_free;

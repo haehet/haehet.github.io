@@ -1,7 +1,7 @@
 +++
 date = '2026-02-09T18:28:12+09:00'
 draft = false
-title = '메모리 관리 3편: Slab Allocator'
+title = '메모리 관리 3: Slab Allocator'
 categories = ['Linux kernel']
 tags = ['Memory Management']
 hideSummary = true
