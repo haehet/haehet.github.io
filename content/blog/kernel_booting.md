@@ -35,6 +35,7 @@ Physical Adress = Segment Selctor * 16 + Offset
 
 보호 모드에서는 `segmentation` 방식을 재구성하였다. 각 segment의 크기와 위치를 세그먼트 디스크립터(Segment Descriptor)라는 자료구조에 기록했다. 세그먼트 디스크립터는 **`Global Descriptor Table` (GDT)** 라고 불리는 자료구조에 저장된다.
 
+![](descriptor.png)
 
 *세그먼트 디스크립터*
 
