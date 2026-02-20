@@ -2,15 +2,15 @@
 date = '2026-02-09T19:18:49+09:00'
 draft = false
 title = 'Cross Cache Attack'
-categories = ['Linux kernel']
-tags = ['kernel exploit']
+categories = ['kernel exploit']
 hideSummary = true
 +++
 이번 글에서는 커널 익스플로잇을 할 때 유용하게 쓰이는 Cross-cache attack에 대해 정리 해보겠다.
 
 ## 1. Cross-Cache attack이란?
 
- Cross-Cache attack이란 취약점이 발생한 object가 **전용 슬랩 캐시****(dedicated kmem_cache)**에 존재해서 exploit을 하기 어려울 때 우리가 공격하기 쉬운 캐시로 가져오는 것을 말한다. 
+Cross-Cache attack이란 취약점이 발생한 object가 **전용 슬랩 캐시(dedicated kmem_cache)** 에 존재해서 exploit을 하기 어려울 때
+우리가 공격하기 쉬운 캐시로 가져오는 것을 말한다.
 
 ![](https://blog.kakaocdn.net/dna/bEIiL8/dJMb99LVF5V/AAAAAAAAAAAAAAAAAAAAAPh5sfy6DSIeI8SNGyxjdZsnzcq4YX8RA9T_KdL5I2Vw/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=TpWGLCcvs5FLuilEan%2BIa%2F5teh4%3D)
 
@@ -30,11 +30,11 @@ Cross-cache attack의 원리는 단순하다. 관리할 수 있는 free page가 
 먼저 설명에 앞서 용어를 정리하겠다. 
 
 
->**objs_per_slab:** 한개의 슬렙 페이지안에 들어가는 object의 수를 말한다.
+>- **objs_per_slab:** 한개의 슬렙 페이지안에 들어가는 object의 수를 말한다.
 >
-> **order:** 한개의 슬렙 페이지의 order(차수)를 말한다.
+>- **order:** 한개의 슬렙 페이지의 order(차수)를 말한다.
 >
-> **cpu_partial:** percpu의 partial list에 들어갈 수 있는 slab 페이지의 최대 수를 말한다.
+>- **cpu_partial:** percpu의 partial list에 들어갈 수 있는 slab 페이지의 최대 수를 말한다.
 
 ![](https://blog.kakaocdn.net/dna/bJj9VZ/dJMcahiUNpF/AAAAAAAAAAAAAAAAAAAAAJdjSF2YrTKpR88WdHnoPpqfE643J591alC3GVmPj73z/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Cya5tvErcK7PNt%2FGSZxkQYWphuM%3D)
 
@@ -123,3 +123,5 @@ reference:
 [https://projectzero.google/2021/10/how-simple-linux-kernel-memory.html](https://projectzero.google/2021/10/how-simple-linux-kernel-memory.html)
 
 [https://github.com/thejh/linux/commit/bc52f973a53d0b525892088dfbd251bc934e3ac3](https://github.com/thejh/linux/commit/bc52f973a53d0b525892088dfbd251bc934e3ac3)
+
+[https://r1ru.github.io/posts/1/](https://r1ru.github.io/posts/1/)

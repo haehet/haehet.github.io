@@ -2,8 +2,7 @@
 date = '2026-02-09T19:09:35+09:00'
 draft = false
 title = 'Slab free list poisoning'
-categories = ['Linux kernel']
-tags = ['kernel exploit']
+categories = ['kernel exploit']
 hideSummary = true
 +++
 

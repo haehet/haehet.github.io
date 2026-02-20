@@ -55,11 +55,9 @@ struct zone {
 
 **Per-CPU** **area:** 이 영역은 **per_cpu_pages**구조체에 의해 나타내지며 **setup_zone_pages()** 함수에 의해 초기화 된다.
 
-  >**per_cpu_area**는 주로 cpu의 요청을 빨리 만족시키기 위한 **page cache**로 사용된다.
+> **per_cpu_area**는 주로 cpu의 요청을 빨리 만족시키기 위한 **page cache**로 사용된다.
 
-**Buddy free area:** 만약 **Per-CPU lists**가 page 요구를 만족시키지 못하거나 요구된 order가     
-
-  PAGE_ALLOC_COSTLR_ORDER보다 크다면 이 영역에 있는 페이지들이 사용된다.
+**Buddy free area:** 만약 **Per-CPU lists**가 page 요구를 만족시키지 못하거나 요구된 order가 PAGE_ALLOC_COSTLR_ORDER보다 크다면 이 영역에 있는 페이지들이 사용된다.
 
 ```c
 struct per_cpu_pages {
@@ -238,7 +236,7 @@ list = &pcp->lists[order_to_pindex(migratetype, order)];
 page = __rmqueue_pcplist(zone, order, migratetype, alloc_flags, pcp, list);
 ```
 
-`rmqueue_bulk()`는  **__rmqueue()**를 여러번 호출하여 페이지를 가져오고, 가져온 페이지를 PCP리스트에 추가한다.
+`rmqueue_bulk()`는  `__rmqueue()`를 여러번 호출하여 페이지를 가져오고, 가져온 페이지를 PCP리스트에 추가한다.
 
 `__rmqueue()`는 __rmqueue_smallest()를 통해 buddy allocator의 free_area 배열을 탐색한다. 해당 migration type에서 적합한 페이지를 찾지 못하면 __rmqueue_fallback()으로 넘어가 다른 migration type의 페이지를 **훔친다**.
 

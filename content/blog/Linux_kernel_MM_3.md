@@ -17,7 +17,7 @@ hideSummary = true
 
  시간이 흐르면서(그리고 수많은 커널 버전을 거치면서) 리눅스의 slab allocator는 발전했고 구조도 상당히 많이 바뀌었다. 현재까지 서로 다른 구현이 세 가지 존재한다. 이 글에서는 **Slub allocator**에 대해 설명할 것이며 편의상 Slab allocator라 지칭하겠다. 
 
- **SLAB allocator:**  SLOB 할당기를 개선한 방식으로 캐시 친화적(cache-friendly)이 되도록 설계되었다. 더 좋은 성능의 SLUB      allocator가 나오고 난 이후로 쓰이지 않는다.
+ **SLAB allocator:**  SLOB 할당기를 개선한 방식으로 캐시 친화적(cache-friendly)이 되도록 설계되었다. 더 좋은 성능의 SLUB allocator가 나오고 난 이후로 쓰이지 않는다.
 
  **SLUB allocator:** 대부분의 kernel 배포 버전에서 쓰이는 allocator이다. slab에 비해 메모리 지역성이 향상되었으며 slab에 비해 관리가 단순하다.
 
@@ -30,11 +30,9 @@ Slab allocator는 커널이 자주 할당·해제하는 **동일 크기/동일 
 슬랩 할당자에서 주로 나오는 용어에 대한 정의는 다음과 같다.
 
 
- **Slab page:** slab object 할당을 위해 Buddy system에서 할당받은 order-n 단위의 page를 말한다.
-
- **Slab object:** slab cache에서 관리하는 object이다. 
-
- **Slab cache:** 특정 타입/크기의 커널 객체를 위한 전용 메모리 풀로 slab을 확보해 객체를 쪼개고 freelist로 재사용을 관리한다.
+>- **Slab page:** slab object 할당을 위해 Buddy system에서 할당받은 order-n 단위의 page를 말한다.
+>- **Slab object:** slab cache에서 관리하는 object이다. 
+>- **Slab cache:** 특정 타입/크기의 커널 객체를 위한 전용 메모리 풀로 slab을 확보해 객체를 쪼개고 freelist로 재사용을 관리한다.
 
 위 설명을 그림으로 표현하면 다음과 같다.
 
@@ -48,7 +46,7 @@ slab allocator은 크게 두 가지 종류의 캐시를 제공한다.
 
 **1. Dedicated(전용) 캐시:** 커널에서 자주 사용되는 객체(예: mm_struct, vm_area_struct 등)를 위해 **커널이 직접 생성한 전용 캐시**다. 이 캐시에서 할당되는 구조체는 초기화되며 해제된 뒤에도 **초기화된 상태가 유지**되므로 다음에 같은 구조체를 다시 할당할 때 더 빠르게 할당할 수 있다.
 
-**2.**  **Generic(일반) 캐시 (size-N 및 size-N(DMA))**: **범용 캐시**로 대부분의 경우 크기가 **2의 거듭제곱**에 해당하는 size-class로 구성된다.
+**2.**  **Generic(일반) 캐시**: **범용 캐시**로 대부분의 경우 크기가 **2의 거듭제곱**에 해당하는 size-class로 구성된다.
 
 이러한 구분은 proc file system에서 확인 가능하다.
 
@@ -117,9 +115,9 @@ struct kmem_cache {
 
 위 캐시는 또 2개의 형태로 나뉜다.
 
- **kmem_cache_cpu __percpu *cpu_slab:** 빠른 할당을 위해 CPU별로 슬랩캐시를 관리하는 구조체이다.
+ `kmem_cache_cpu __percpu *cpu_slab`: 빠른 할당을 위해 CPU별로 슬랩캐시를 관리하는 구조체이다.
 
- **kmem_cache_node *node[MAX_NUMNODES]:** NUMA 구조에서 슬랩 페이지들을 노드별로 관리하기 위한 구조체이다.
+ `kmem_cache_node *node[MAX_NUMNODES]`: NUMA 구조에서 슬랩 페이지들을 노드별로 관리하기 위한 구조체이다.
 
 ![](https://blog.kakaocdn.net/dna/mY6rG/dJMcagEgDJQ/AAAAAAAAAAAAAAAAAAAAAGJthjBxFK138QB0JiUAuK4DczoE9quIvtnEaO46SEun/img.webp?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=2Z1Uup1g6F6oY6mTShYJVP4RNqI%3D)
 
@@ -144,31 +142,31 @@ struct kmem_cache_cpu {
 
 slab object는 5개의 방식(Fast path, Slowpath-1, Slowpath-2, Slowpath-3, Slowpath-4)중 한개로 할당된다.
 
-#### **4.1 Fast path**
+### 4.1 Fast path
 
 Fastpath는 가장 빠른 할당방식으로 **현재 percpu→freelist**에 할당 가능한 object가 있으면 바로 할당해주는 방식이다.
 
 ![](https://blog.kakaocdn.net/dna/bPkELA/dJMcahXtf4s/AAAAAAAAAAAAAAAAAAAAAHXx-MiIDtpiV-VrtY9Qms4k6bfTB4ZgSJzNYvhYKL2K/img.webp?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=iSpuegl96UK5QbfD%2F3mIpt6zxAY%3D)
 
-#### **4.2 Slowpath -1**
+### 4.2 Slowpath -1
 
 **현재 percpu→freelist**에 사용할 수 있는 object가 없을 경우 Slowpath-1 방식이 실행된다. **percpu →page →freelist**에 들어있는 object를 **percpu→freelist**로 올리고 fastpath로 돌아간다.
 
 ![](https://blog.kakaocdn.net/dna/cFQG5m/dJMcafL6w14/AAAAAAAAAAAAAAAAAAAAAP_raTLk-4VomArWv7ZG9RTn-HlKfJMVgi3Mdlld1a_0/img.webp?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=LthXgnIXMb8p8iFgKb1kYbmENgM%3D)
 
-#### **4.3 Slowpath-2**
+### 4.3 Slowpath-2
 
 **slowpath-1**에서 **percpu →page**에 free된 object가 없는 경우 실행된다. **percpu→partial**에 있는 slab page를 **percpu→page**로 올리고 slab page 내부 object들을 **percpu→freelist**로 이동시킨다.
 
 ![](https://blog.kakaocdn.net/dna/DRWC1/dJMcaaRy2IL/AAAAAAAAAAAAAAAAAAAAAERmuGoZX_rTIcJrpn52jh4ER86jxZQKNs7tD9PQteSY/img.webp?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=X9VuSwN8Qaz3G7Jjb%2F5tKLp94FQ%3D)
 
-#### **4.4 slow path-3**
+### 4.4 slow path-3
 
 **percpu→partial**에 할당 가능한 object가 없는 경우 실행된다. **node **→** partial**에 들어있는 첫 슬랩 페이지를 **percpu→page**로 올린다. 
 
 ![](https://blog.kakaocdn.net/dna/pDCX3/dJMcahXtgjz/AAAAAAAAAAAAAAAAAAAAACrOzsPA6ezhrEUErnsMZLdnhoBFJUtJPYvC_4D4obJu/img.webp?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=ynFdQyiDNDFb6F1gulI72aomkTA%3D)
 
-#### **4.5 slowpath-4**
+### 4.5 slowpath-4
 
 위 과정이 모두 실패한 경우로 **buddy system**에서 새로운 slab page를 할당 받는다. 그리고 **percpu→page,** **percpu→freelist**에 슬랩 오브젝트를 옮긴다.
 
@@ -182,13 +180,13 @@ Fastpath는 가장 빠른 할당방식으로 **현재 percpu→freelist**에 �
 
 해제 과정은 할당과정과 매우 유사하게 이루어진다.
 
-#### **5.1 fast path**
+### 5.1 fast path
 
 현재 반환하는 object가 현재 cpu의 **percpu→page**에서 관리중이였다면 바로 **percpu→freelist**에 추가한다.
 
 ![](https://blog.kakaocdn.net/dna/SYDZp/dJMcadAHm5D/AAAAAAAAAAAAAAAAAAAAAArjG4wK43WKocyykDDnXb1X6dul79wKX91iR6bzaWZN/img.webp?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=KCvjaQZo4wIyZUkI9gXSNlR2vHE%3D)
 
-#### **5.2 slow path**
+### 5.2 slow path
 
 현재 반환하는 object가 현재 cpu의 **percpu→page**에서 관리중이 아니였다면 다음 3가지 경우로 나뉜다.
 

@@ -2,8 +2,7 @@
 date = '2026-02-09T19:53:44+09:00'
 draft = false
 title = 'Dirty Pagetable'
-categories = ['Linux kernel']
-tags = ['kernel exploit']
+categories = ['kernel exploit']
 hideSummary = true
 +++
 이번 글에서는 kernel exploit을 할 때 강력한 primitive를 얻을 수 있는 Dirty Pagetable에 대해서 정리해보겠다.
