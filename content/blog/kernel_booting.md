@@ -1,7 +1,7 @@
 +++
 date = '2026-02-20T22:39:17+09:00'
 draft = false
-title = 'Linux kernel Booting'
+title = 'Linux kernel - Booting'
 categories = ['Linux kernel']
 tags = ['Boot']
 hideSummary = true

@@ -1,7 +1,7 @@
 +++
 date = '2026-02-23T20:46:33+09:00'
 draft = false
-title = 'Linux kernel Interrupt'
+title = 'Linux kernel - Interrupt'
 categories = ['Linux kernel']
 tags = ['Interrupt']
 hideSummary = true
@@ -65,8 +65,9 @@ _IDT_
 * 2. 인터럽트가 에러 코드를 유발하면 CPU는 스택의 명령 포인터 다음에 에러를 저장한다.
 * 3.  인터럽트 핸들러가 실행된 후에는, 다시 돌아오기 위해 `iret` 명령을 사용한다.
 
-> **NOTE**
-> 이 글에서는 IDT의 초기화 부분은 다루지 않겠습니다. 궁금하신 분은 아래 reference를 참고해주세요.
+> [!NOTE]
+> 이 글에서는 IDT의 초기화 부분은 다루지 않겠습니다.
+> 궁금하신 분은 아래 reference를 참고해주세요.
 
 ## 3. IRQ 
 
@@ -197,7 +198,7 @@ _top half와 bottom half_
 
 ![](Pasted%20image%2020260223204433.png)
 
->**CAUTION**
+>[!CAUTION]
 >위 글에는 틀린 내용이 있을 수 있으니 주의 바랍니당
 >
 
