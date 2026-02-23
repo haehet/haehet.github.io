@@ -40,7 +40,7 @@ for (size_t page = 0; page < PAGE_SPRAY_COUNT; ++page)
     memset(pages[page], 'A', SPRAY_PAGE_SIZE);
 ```
 
- 안정적인 exploit을 위해서는 **TLB(Translation Lookaside Buffer)**를 **Flush**해주는 과정이 필요하다. page table을 교체 했는데 CPU가 TLB에 있는 캐시 pte를 읽고 접근하면 원하는 메모리 접근이 안될 수 있기 때문이다. 다음과 같이 **mprotect로** 해당 메모리의 접근 권한을 바꾸는 것을 통해 TLB flushing을 할 수 있다. (만약 mprotect같은 syscall이 사용 불가능한 상황이면 메모리 접근에 딜레이를 넣어보자)
+ 안정적인 exploit을 위해서는 **TLB**(**Translation Lookaside Buffer**)를 **Flush**해주는 과정이 필요하다. page table을 교체 했는데 CPU가 TLB에 있는 캐시 pte를 읽고 접근하면 원하는 메모리 접근이 안될 수 있기 때문이다. 다음과 같이 **mprotect로** 해당 메모리의 접근 권한을 바꾸는 것을 통해 TLB flushing을 할 수 있다. (만약 mprotect같은 syscall이 사용 불가능한 상황이면 메모리 접근에 딜레이를 넣어보자)
 
 ```c
 /* Flushes the TLB by temporarily changing memory permissions */
