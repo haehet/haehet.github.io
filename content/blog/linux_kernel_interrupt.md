@@ -131,7 +131,6 @@ struct irq_desc {
 구조체의 각 필드의 의미는 다음과 같다.
 
 - `   irq_common_data` - chip 함수로 전달된 각각의 chip 데이터와 irq;
-- 
 - `kstat_irqs` - 각 cpu의 irq 통계;
     
 - `handle_irq` - 하이레벨 irq-events 핸들러;
