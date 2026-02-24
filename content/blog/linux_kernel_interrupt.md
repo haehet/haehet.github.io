@@ -3,7 +3,6 @@ date = '2026-02-23T20:46:33+09:00'
 draft = false
 title = 'Linux kernel - Interrupt'
 categories = ['Linux kernel']
-tags = ['Interrupt']
 hideSummary = true
 +++
 
