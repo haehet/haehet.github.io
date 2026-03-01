@@ -11,8 +11,7 @@ hideSummary = true
 
  멀티레벨페이징을 공부했다면 알겠지만 page table은 CPU가 가상주소(VA)를 물리주소(PA)로 변환할 때 쓰는 테이블이다. CR3레지스터를 통해 확인 가능하다. (여기서는 따로 이론적인 내용을 길게 설명 안하겠다.)
 
-![](https://blog.kakaocdn.net/dna/WkIxV/dJMcajgHoMJ/AAAAAAAAAAAAAAAAAAAAAJsJCZBz-tG5Z8B3m0KrsJPytpKpkRXcVPUKhHKQ4xq0/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=UIP8xTVKWcwZnkXWei6oT06whSg%3D)
-
+![](/blog/Dirty_Pagetable/2026-03-01-10-32-57.png)
 
 page table은 항상 미리 다 만들어져 있는 게 아니라 Linux는 대부분의 매핑을 **지연(lazy) 생성**한다. 즉 실제 페이지테이블 엔트리는 첫 접근(page fault)가 발생하면서 할당되는 경우가 많다. Dirty Pagetable 기법은 이를 이용한다.
 &nbsp;
@@ -64,13 +63,13 @@ void flush_tlb_and_print(void *ptr, size_t count) {
 
 Diry pagetable 공격이 성공을 했어도 우리가 원하는 주소의 물리주소를 알지 못하면 의미가 없다. 먼저 physmap의 물리주소는 그냥 phsymap의 가상 주소의 **하위 3바이트**랑 동일하다.  하지만 kernel base의 물리주소는 커널이 부팅될 때마다 바뀐다. 우리는 이 물리 주소를 얻기 위해서 커널의 특정 고정된 물리주소를 이용한다. 다음과 같이 물리 주소 **0x9c000**에 접근 시 놀라운 점을 볼 수 있다.
 
-![](https://blog.kakaocdn.net/dna/PLBy2/dJMcadHy88s/AAAAAAAAAAAAAAAAAAAAACGWRJQIbFyPC_e1z6etgHUHUCHmjVmEsma1jbHaLtPQ/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=td1AF0AMDL3O9EK%2FwYQn3fLdb98%3D)
+![](/blog/Dirty_Pagetable/2026-03-01-10-33-12.png)
 
 다음과 같이 뭔가 수상한 숫자가 적혀있는데 이를 kbsae의 물리주소와 빼보면 **고정된 오프셋**이 나오는 것을 알 수 있다. 이 커널의 경우 0x2404000이다.
 
-![](https://blog.kakaocdn.net/dna/dV1zM7/dJMcadOiznj/AAAAAAAAAAAAAAAAAAAAAKfoVZ1DavYa48JKdqTgDGCVil6q6RAHPZvR5Hoh1eHI/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=fyArGsuRe1qE0xjk0p52XR6inzw%3D)
+![](/blog/Dirty_Pagetable/2026-03-01-10-33-21.png)
 
-![](https://blog.kakaocdn.net/dna/lwsj3/dJMcagRRYT6/AAAAAAAAAAAAAAAAAAAAAHZXSYYYu1sNjBI7hMBq4HKyUPc9t5z6Q-ARu6mHMjbP/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=IbOz86odIr6CcRt7j67cdLR5Sqc%3D)
+![](/blog/Dirty_Pagetable/2026-03-01-10-33-28.png)
 
 해당 근처 영역의 메모리를 계속 조사해보면 커널 부팅과 관련한 곳으로 보인다. 아마 커널의 부팅과정을 고정된 물리주소 근처에서 하는 듯 하다. 이를 통해 kernel base의 물리 주소를 얻으면 kernel 모든 영역의 aar, aaw를 얻을 수 있다. 
 
