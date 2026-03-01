@@ -10,15 +10,14 @@ hideSummary = true
 ## 1. Cross-Cache attack이란?
 
 Cross-Cache attack이란 취약점이 발생한 object가 **전용 슬랩 캐시(dedicated kmem_cache)** 에 존재해서 exploit을 하기 어려울 때 우리가 공격하기 쉬운 캐시로 가져오는 것을 말한다.
-
-![](Pasted%20image%2020260301102432.png)
+![](/blog/Cross-Cache-attack/2026-03-01-10-50-33.png)
 
 다음과 같이 **전용 슬랩 객체 A**에서 **UAF** 취약점이 발생했다고 하자. A 객체만으로는 exploit을 하기가 힘들다. 따라서 Cross-Cache attack을 통해 exploit 하기 쉬운 객체 **B**를 불러온다. 
 
 이를 통해 다음과 같이 강력한 exploit primitive 불러 올 수 있다.
-![](Pasted%20image%2020260301102440.png)
+![](/blog/Cross-Cache-attack/2026-03-01-10-50-44.png)
 Cross-cache attack의 원리는 단순하다. 관리할 수 있는 free page가 가득 차면 buddy system으로 slab page를 반환 하는 것을 이용한다. buddy system에 반환 후 해당 물리 페이지가 우리가 exploit 하기 쉬운 객체 B의 slab page로 재사용 하게 하면 된다.
-![](Pasted%20image%2020260301102446.png)
+![](/blog/Cross-Cache-attack/2026-03-01-10-50-51.png)
 ## 2. Cross-cache attack의 과정
 
 먼저 설명에 앞서 용어를 정리하겠다. 
@@ -29,7 +28,7 @@ Cross-cache attack의 원리는 단순하다. 관리할 수 있는 free page가 
 >     
 > - **cpu_partial:** percpu의 partial list에 들어갈 수 있는 slab 페이지의 최대 수를 말한다.
 >     
-![](Pasted%20image%2020260301102452.png)
+![](/blog/Cross-Cache-attack/2026-03-01-10-50-57.png)
 **1. Pin task to a single cpu**
 
 슬랩 객체의 할당을 예측하기 쉽게 우리의 CPU를 고정해둔다. 다음과 같은 함수를 통해 할 수 있다.
@@ -45,7 +44,7 @@ Cross-cache attack의 원리는 단순하다. 관리할 수 있는 free page가 
 **3. Allocate around objs_per_slab * (1+cpu_partial) objects**
 
 objs_per_slab * (1 + cpu_partial) 정도의 객체를 할당해준다. 최소 **cpu_partial**개의 페이지를 전부 채울정도로 할당한다. 
-![](Pasted%20image%2020260301102459.png)
+![](/blog/Cross-Cache-attack/2026-03-01-10-51-09.png)
 **4. Allocate objs_per_slab-1 objects as pre-alloc objects**
 
 단계의 목적은 이후 할당이 **특정한 한 페이지**에서 나오도록 상태를 정렬하는 것이다.
@@ -58,16 +57,16 @@ objs_per_slab * (1 + cpu_partial) 정도의 객체를 할당해준다. 최소 *
 
 취약점을 trigger 해준다.
 
-![](Pasted%20image%2020260301102507.png)
+![](/blog/Cross-Cache-attack/2026-03-01-10-51-18.png)
 
 **7. Allocate objs_per_slab+1 objects as post-alloc objects**
 
 이 과정을 통해 victim page(victim 객체가 들어있는 슬랩 페이지)는 전부 채워진다. 또한 더 이상 현재 CPU가 계속 할당에 쓰는 **CPU slab**이 아니게 된다. (post-alloc)
-![](Pasted%20image%2020260301102514.png)
+![](/blog/Cross-Cache-attack/2026-03-01-10-51-26.png)
 **8. Release all the pre-alloc and post-alloc objects**
 
 단계 4, 7에서 할당한 객체들을 전부 해제 해준다. 그러면 victim page는 빈 페이지(empty slab)가 된다. 하지만 곧바로 buddy로 반환되지는 않는다. 먼저 per-CPU partial list로 간다.
-![](Pasted%20image%2020260301102520.png)
+![](/blog/Cross-Cache-attack/2026-03-01-10-51-41.png)
 **9. Free one object per slab from the allocations from Step3**
 
 이제 Step 3에서 대량으로 할당해 둔 객체들에 대해 **각 페이지마다 객체를 1개씩 free** 한다. 이렇게 하면 그 객체가 속해 있던 **각 slab page** 가 free 객체를 포함하는 페이지가 되면서 해당 페이지들이 순차적으로 **percpu partial list** 로 들어가게 된다. 이 작업을 반복하면 percpu partial list에 페이지가 계속 쌓이는데 결국 리스트 길이가 **cpu_partial 한계**에 도달하면 SLUB은 더 이상 percpu partial에 유지할 수 없어서 **flush**를 수행한다. flush가 일어나면 페이지들은 상태에 따라 나뉜다. 
@@ -77,11 +76,11 @@ objs_per_slab * (1 + cpu_partial) 정도의 객체를 할당해준다. 최소 *
 > 
 >   **페이지 안의 모든 객체가 free인 페이지(empty slab)**  
 > → **Buddy system으로 반환된다.**
-![](Pasted%20image%2020260301102526.png)
+![](/blog/Cross-Cache-attack/2026-03-01-10-51-52.png)
 **10. Heap spray with object B to occupy the victim slab, victim object A gets reallocated as object B**
 
 우리가 원하는 객체(ex: cred)를 spray해준다.
-![](Pasted%20image%2020260301102532.png)
+![](/blog/Cross-Cache-attack/2026-03-01-10-51-59.png)
 ## 3. SLAB_VIRTUAL
 
 최근 커널에서는 Cross-cache attack을 구조적으로 차단하기 위한 방어 기법으로 **SLAB_VIRTUAL** 이라는 메커니즘이 도입되었다. 이는 슬랩을 더 이상 물리 페이지가 아닌 **전용 가상 메모리 영역**에 할당 하는 것이다. 만약 backing physical page가 buddy로 갔다가 다시 잡히더라도 가상 주소가 달라서 공격이 불가능하다.  (물론 시스템 성능은 보장 못한다 zz)
